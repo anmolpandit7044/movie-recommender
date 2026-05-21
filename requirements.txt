@@ -1,6 +1,4 @@
+streamlit
 pandas
 scikit-learn
-streamlit
-fastapi
-uvicorn
-scikit-surprise
+numpy
