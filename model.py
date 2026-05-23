@@ -101,12 +101,13 @@ movies['crew'] = movies['crew'].apply(
 # ---------------- CREATE TAGS ----------------
 
 movies['tags'] = (
-        movies['overview'] +
-        movies['genres'] +
-        movies['keywords'] +
-        movies['cast'] +
-        movies['crew']
+    movies['genres'] + " " +
+    movies['keywords'] + " " +
+    movies['overview'] + " " +
+    movies['cast'] + " " +
+    movies['crew']
 )
+
 
 # ---------------- NEW DATAFRAME ----------------
 
