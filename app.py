@@ -1,4 +1,5 @@
 import streamlit as st
+import requests
 from model import recommend, new_data
 
 # ---------------- PAGE CONFIG ----------------
@@ -12,8 +13,8 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-.main {
-    background: radial-gradient(circle at top, #141414, #000);
+.stApp {
+    background-color: #000814;
     color: white;
 }
 
@@ -41,11 +42,12 @@ h1 {
 
 .movie-card {
     background: #1c1c1c;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 12px;
-    border-left: 5px solid #E50914;
-    font-size: 18px;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    min-height: 80px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .movie-card:hover {
@@ -55,6 +57,26 @@ h1 {
 
 </style>
 """, unsafe_allow_html=True)
+
+def fetch_poster(movie):
+
+    try:
+        url = f"https://www.omdbapi.com/?t={movie}&apikey=31a92a7c"
+
+        response = requests.get(url)
+
+        data = response.json()
+
+        poster = data.get("Poster", "N/A")
+
+        if poster == "N/A":
+            return None
+
+        return poster
+
+    except:
+        return None
+
 
 # ---------------- TITLE ----------------
 st.markdown("<h1>🎬 Netflix Style Movie Recommender</h1>", unsafe_allow_html=True)
@@ -77,16 +99,41 @@ if st.button("Recommend"):
         st.warning("⚠ Please select a movie")
 
     else:
+
         result = recommend(selected_movie)
 
-        st.subheader("🍿 Recommended Movies")
+        if not result:
+            st.error("No recommendations found")
 
-        cols = st.columns(3)
+        else:
 
-        for i, movie in enumerate(result):
-            with cols[i % 3]:
-                st.markdown(f"""
-                <div class="movie-card">
-                    🎬 {movie}
-                </div>
-                """, unsafe_allow_html=True)
+            st.subheader("🍿 Recommended Movies")
+
+            cols = st.columns(3)
+
+            for idx, movie in enumerate(result[:5]):
+
+               with cols[idx % 3]:
+
+                 poster = fetch_poster(movie)
+
+                 if poster:
+                    st.image(poster, width=200)
+                 else:
+                   st.write("🎞 Poster not available")
+
+                 st.markdown(
+                    f"""
+                    <div style="
+                        width:200px;
+                        text-align:center;
+                        color:white;
+                        font-size:20px;
+                        font-weight:bold;
+                        margin-top:8px;
+                    ">
+                        🎬 {movie}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
